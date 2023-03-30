@@ -1,9 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { AbstractEntity } from "../../common/abstract.entity";
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  public id?: string;
+export class User extends AbstractEntity {
 
   @Column({ unique: true })
   public email: string;

@@ -1,34 +1,45 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from "@nestjs/common";
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService
+  ) {}
 
-  @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+  @Post('/create')
+  async registerProduct(@Body() createProductDto: CreateProductDto) {
+    const newProduct = await this.productService.createProduct(createProductDto)
+    return newProduct;
   }
 
-  @Get()
-  findAll() {
-    return this.productService.findAll();
+  @Get('/all')
+  async getProducts(){
+    const products = await this.productService.getAllProducts()
+    return {
+      count: products.length,
+      products: products
+    }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+  @Get('/:id')
+  async getProduct(@Param('id') id: string){
+    const product = await this.productService.getProduct(id)
+    return product;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+  @Delete('/:id')
+  async deleteProduct(@Param('id') id: string){
+    const result = await this.productService.deleteProduct(id)
+    return result;
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  @Put('/:id')
+  async updateProduct(@Param('id') id: string, @Body() createProductDto: CreateProductDto ){
+    const result = await this.productService.updatedProduct(id, createProductDto)
+    return result;
   }
+
 }
