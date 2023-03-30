@@ -1,0 +1,48 @@
+services:
+  postgres_db:
+    image: postgres
+    restart: always
+    container_name: postgres_db
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=testdb
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres-network
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "test@test.com"
+      PGADMIN_DEFAULT_PASSWORD: "test"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres_db
+    networks:
+      - postgres-network
+
+  nestjs_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env
+    command: npm run start:dev
+    ports:
+      - 8080:3000
+    depends_on:
+      - postgres_db
+    networks:
+      - postgres-network
+
+networks:
+  postgres-network:
+    driver: bridge
